@@ -207,32 +207,33 @@
     background-size: 22px 22px;
   }
 
-  @keyframes pulse-ring {
-    0% { box-shadow: 0 0 0 0 var(--tw-shadow-color, oklch(0.7 0.2 240 / 0.5)); }
-    70% { box-shadow: 0 0 0 16px oklch(0.7 0.2 240 / 0); }
-    100% { box-shadow: 0 0 0 0 oklch(0.7 0.2 240 / 0); }
-  }
   .animate-pulse-ring { animation: pulse-ring 2.4s cubic-bezier(0.4,0,0.6,1) infinite; }
 
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
   .animate-shimmer {
     background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.08), transparent);
     background-size: 200% 100%;
     animation: shimmer 2.2s linear infinite;
   }
 
-  @keyframes float-slow {
-    0%,100% { transform: translateY(0px); }
-    50% { transform: translateY(-6px); }
-  }
   .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
 
   .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
   .scrollbar-thin::-webkit-scrollbar-thumb { background: oklch(1 0 0 / 0.1); border-radius: 999px; }
   .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 oklch(0.7 0.2 240 / 0.5); }
+  70% { box-shadow: 0 0 0 16px oklch(0.7 0.2 240 / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(0.7 0.2 240 / 0); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
 }
 
 /* Force dark mode globally for AQI Core */
