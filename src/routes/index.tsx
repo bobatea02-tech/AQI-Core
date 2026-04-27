@@ -14,8 +14,9 @@ import { TabSources } from "@/components/aqi/TabSources";
 import { TabValidation } from "@/components/aqi/TabValidation";
 
 const CITIES = [
-  "Delhi", "London", "Tokyo", "New York", "Mumbai", "Beijing",
-  "Paris", "Sydney", "Cairo", "Sao Paulo", "Mexico City", "Bangkok",
+  "Delhi", "Mumbai", "Bengaluru", "Kolkata", "Chennai", "Hyderabad",
+  "Pune", "Ahmedabad", "Jaipur", "Lucknow", "Kanpur", "Patna",
+  "Varanasi", "Bhopal", "Chandigarh", "Gurgaon", "Noida",
 ];
 
 export const Route = createFileRoute("/")({
@@ -43,7 +44,7 @@ function Dashboard() {
   });
 
   return (
-    <div className="bg-app grid-dots flex h-screen w-screen flex-col text-foreground">
+    <div className="bg-app grid-dots relative flex h-screen w-screen flex-col overflow-hidden text-foreground">
       {/* ambient orbs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <motion.div
@@ -71,20 +72,50 @@ function Dashboard() {
         <SkeletonHeader city={city} cities={CITIES} onCityChange={setCity} loading={query.isLoading} error={query.data?.error || (query.error instanceof Error ? query.error.message : null)} />
       )}
 
+      {/* Source notice banner */}
+      <AnimatePresence>
+        {query.data?.ok && query.data.data?.notice && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -8, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="relative z-10 overflow-hidden border-b border-amber-500/20 bg-amber-500/5"
+          >
+            <div className="flex items-center gap-2.5 px-6 py-2 text-[11px]">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-400" />
+              </span>
+              <span className="font-semibold uppercase tracking-[0.16em] text-amber-300">
+                {query.data.data.source === "simulated" ? "Simulation Mode" : "Notice"}
+              </span>
+              <span className="text-amber-100/80">{query.data.data.notice}</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Tabs */}
-      <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} className="relative z-10 flex min-h-0 flex-1 flex-col px-4 pb-4 pt-3">
-        <TabsList className="mb-3 h-10 w-fit rounded-xl border border-white/5 bg-black/30 p-1 backdrop-blur">
+      <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} className="relative z-10 flex min-h-0 flex-1 flex-col gap-4 px-6 pb-5 pt-4">
+        <motion.div
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+        >
+        <TabsList className="h-11 w-fit gap-1 rounded-2xl border border-white/5 bg-black/40 p-1.5 backdrop-blur-xl shadow-card">
           {TABS.map((t) => (
             <TabsTrigger
               key={t.id}
               value={t.id}
-              className="group relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground transition data-[state=active]:bg-gradient-accent data-[state=active]:text-white data-[state=active]:shadow-glow"
+              className="group relative flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-medium text-muted-foreground transition-all hover:text-foreground data-[state=active]:bg-gradient-accent data-[state=active]:text-white data-[state=active]:shadow-glow"
             >
-              <t.icon className="h-3.5 w-3.5" />
+              <t.icon className="h-3.5 w-3.5 transition-transform group-data-[state=active]:scale-110" />
               {t.label}
             </TabsTrigger>
           ))}
         </TabsList>
+        </motion.div>
 
         <div className="relative min-h-0 flex-1">
           <AnimatePresence mode="wait">
