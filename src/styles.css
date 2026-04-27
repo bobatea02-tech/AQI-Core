@@ -4,6 +4,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* AQI Core — dark, gradient-heavy analytical theme */
+
 /*
  * Design system definition.
  *
@@ -59,6 +61,14 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-aqi-good: var(--aqi-good);
+  --color-aqi-fair: var(--aqi-fair);
+  --color-aqi-moderate: var(--aqi-moderate);
+  --color-aqi-poor: var(--aqi-poor);
+  --color-aqi-very-poor: var(--aqi-very-poor);
+  --color-aqi-hazard: var(--aqi-hazard);
+  --color-grid: var(--grid);
+  --color-glow: var(--glow);
 }
 
 :root {
@@ -95,6 +105,24 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+  --aqi-good: oklch(0.78 0.18 150);
+  --aqi-fair: oklch(0.85 0.17 95);
+  --aqi-moderate: oklch(0.78 0.18 65);
+  --aqi-poor: oklch(0.7 0.22 30);
+  --aqi-very-poor: oklch(0.55 0.25 350);
+  --aqi-hazard: oklch(0.45 0.2 10);
+  --grid: oklch(0.929 0.013 255.508 / 60%);
+  --glow: oklch(0.7 0.2 240);
+  --gradient-bg: radial-gradient(ellipse 80% 60% at 20% 0%, oklch(0.25 0.12 270 / 0.35), transparent 60%),
+                 radial-gradient(ellipse 70% 60% at 100% 100%, oklch(0.3 0.15 200 / 0.3), transparent 60%),
+                 linear-gradient(180deg, oklch(0.07 0.02 260), oklch(0.05 0.02 250));
+  --gradient-card: linear-gradient(140deg, oklch(0.16 0.04 260 / 0.85), oklch(0.1 0.03 250 / 0.6));
+  --gradient-accent: linear-gradient(135deg, oklch(0.65 0.22 260), oklch(0.7 0.2 200));
+  --gradient-good: linear-gradient(135deg, oklch(0.78 0.18 150), oklch(0.65 0.2 180));
+  --gradient-warn: linear-gradient(135deg, oklch(0.78 0.18 65), oklch(0.7 0.22 30));
+  --gradient-danger: linear-gradient(135deg, oklch(0.6 0.25 20), oklch(0.5 0.25 350));
+  --shadow-glow: 0 0 40px -8px oklch(0.7 0.2 240 / 0.5);
+  --shadow-card: 0 8px 32px -8px oklch(0 0 0 / 0.6), inset 0 1px 0 0 oklch(1 0 0 / 0.06);
 }
 
 .dark {
@@ -130,6 +158,14 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  --aqi-good: oklch(0.78 0.18 150);
+  --aqi-fair: oklch(0.85 0.17 95);
+  --aqi-moderate: oklch(0.78 0.18 65);
+  --aqi-poor: oklch(0.7 0.22 30);
+  --aqi-very-poor: oklch(0.6 0.25 350);
+  --aqi-hazard: oklch(0.55 0.22 10);
+  --grid: oklch(1 0 0 / 8%);
+  --glow: oklch(0.7 0.2 240);
 }
 
 @layer base {
@@ -140,5 +176,66 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-feature-settings: "ss01", "cv11", "tnum";
+  }
+
+  html, body, #root {
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
+@layer utilities {
+  .bg-app {
+    background: var(--gradient-bg);
+  }
+  .bg-card-gradient {
+    background: var(--gradient-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .bg-gradient-accent { background: var(--gradient-accent); }
+  .bg-gradient-good { background: var(--gradient-good); }
+  .bg-gradient-warn { background: var(--gradient-warn); }
+  .bg-gradient-danger { background: var(--gradient-danger); }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
+  .shadow-card { box-shadow: var(--shadow-card); }
+  .text-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
+
+  .grid-dots {
+    background-image: radial-gradient(oklch(1 0 0 / 0.06) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 var(--tw-shadow-color, oklch(0.7 0.2 240 / 0.5)); }
+    70% { box-shadow: 0 0 0 16px oklch(0.7 0.2 240 / 0); }
+    100% { box-shadow: 0 0 0 0 oklch(0.7 0.2 240 / 0); }
+  }
+  .animate-pulse-ring { animation: pulse-ring 2.4s cubic-bezier(0.4,0,0.6,1) infinite; }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.08), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2.2s linear infinite;
+  }
+
+  @keyframes float-slow {
+    0%,100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+  }
+  .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: oklch(1 0 0 / 0.1); border-radius: 999px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+}
+
+/* Force dark mode globally for AQI Core */
+html { color-scheme: dark; }
   }
 }
