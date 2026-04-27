@@ -53,7 +53,7 @@ export function TabPredict({ snapshot }: { snapshot: CitySnapshot }) {
   const accuracy = Math.round((1 - Math.min(0.4, sigma / 100)) * 100);
 
   return (
-    <div className="grid h-full grid-cols-12 grid-rows-6 gap-3">
+    <div className="grid h-full grid-cols-12 grid-rows-6 gap-4">
       <Panel title="Forecast Horizon" subtitle="History → 24h prediction with 95% CI" badge="ARIMA-lite" className="col-span-9 row-span-4">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={merged}>

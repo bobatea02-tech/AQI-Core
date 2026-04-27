@@ -46,7 +46,7 @@ export function TabValidation({ snapshot }: { snapshot: CitySnapshot }) {
   };
 
   return (
-    <div className="grid h-full grid-cols-12 grid-rows-6 gap-3">
+    <div className="grid h-full grid-cols-12 grid-rows-6 gap-4">
       {/* WHO compliance */}
       <Panel title="WHO Guideline Validation" subtitle="2021 Air Quality Guidelines" badge="compliance" className="col-span-6 row-span-4">
         <div className="flex flex-col gap-2">

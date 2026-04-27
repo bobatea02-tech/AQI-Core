@@ -32,7 +32,7 @@ export function TabPipeline({ snapshot }: { snapshot: CitySnapshot }) {
   ];
 
   return (
-    <div className="grid h-full grid-cols-12 grid-rows-6 gap-3">
+    <div className="grid h-full grid-cols-12 grid-rows-6 gap-4">
       {/* Pipeline stages */}
       <Panel title="Preprocessing Pipeline" subtitle="Stage 1 → Stage 2" badge="ETL" className="col-span-12 row-span-1">
         <div className="flex items-center gap-2">

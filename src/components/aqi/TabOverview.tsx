@@ -61,7 +61,7 @@ export function TabOverview({ snapshot }: { snapshot: CitySnapshot }) {
   ];
 
   return (
-    <div className="grid h-full grid-cols-12 grid-rows-6 gap-3">
+    <div className="grid h-full grid-cols-12 grid-rows-6 gap-4">
       {/* Big AQI hero */}
       <Panel title="Live Air Quality" subtitle={`${snapshot.city}, ${snapshot.country}`} badge="EPA scale" className="col-span-4 row-span-4">
         <div className="relative flex flex-1 flex-col items-center justify-center">
