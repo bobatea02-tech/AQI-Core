@@ -40,7 +40,7 @@ export function TabSources({ snapshot }: { snapshot: CitySnapshot }) {
   }));
 
   return (
-    <div className="grid h-full grid-cols-12 grid-rows-6 gap-3">
+    <div className="grid h-full grid-cols-12 grid-rows-6 gap-4">
       {/* Source attribution bars */}
       <Panel title="Pollution Source Attribution" subtitle="Inferred from chemical signature" badge="heuristic" className="col-span-6 row-span-6">
         <div className="flex h-full flex-col justify-center gap-3.5">

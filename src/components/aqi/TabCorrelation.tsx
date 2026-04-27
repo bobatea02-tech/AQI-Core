@@ -50,7 +50,7 @@ export function TabCorrelation({ snapshot }: { snapshot: CitySnapshot }) {
   }
 
   return (
-    <div className="grid h-full grid-cols-12 grid-rows-6 gap-3">
+    <div className="grid h-full grid-cols-12 grid-rows-6 gap-4">
       {/* Heatmap */}
       <Panel title="Pollutant Correlation Matrix" subtitle="Pearson r · 24h window" badge="EDA" className="col-span-7 row-span-6">
         <div className="flex h-full flex-col">

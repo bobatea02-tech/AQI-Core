@@ -21,7 +21,7 @@ export function Header({ snapshot, city, cities, onCityChange, onRefresh, refres
   const since = Math.floor((Date.now() - snapshot.fetchedAt) / 1000);
 
   return (
-    <header className="relative flex items-center gap-4 border-b border-white/5 bg-card-gradient px-5 py-3 shadow-card">
+    <header className="relative z-20 flex items-center gap-5 border-b border-white/5 bg-card-gradient px-7 py-4 shadow-card">
       {/* Brand */}
       <div className="flex items-center gap-2.5">
         <motion.div
@@ -39,7 +39,7 @@ export function Header({ snapshot, city, cities, onCityChange, onRefresh, refres
         </div>
       </div>
 
-      <div className="mx-3 h-9 w-px bg-white/5" />
+      <div className="mx-2 h-10 w-px bg-gradient-to-b from-transparent via-white/15 to-transparent" />
 
       {/* Live AQI orb */}
       <motion.div
@@ -69,22 +69,22 @@ export function Header({ snapshot, city, cities, onCityChange, onRefresh, refres
         </div>
       </motion.div>
 
-      <div className="ml-auto flex items-center gap-3">
+      <div className="ml-auto flex items-center gap-4">
         {/* Mini KPI row */}
         <MiniStat label="Temp" value={`${snapshot.weather.temp.toFixed(1)}°`} />
         <MiniStat label="Humidity" value={`${snapshot.weather.humidity}%`} />
         <MiniStat label="Wind" value={`${snapshot.weather.wind_speed.toFixed(1)} m/s`} />
         <MiniStat label="OWM AQI" value={`${snapshot.current.aqi}/5`} />
 
-        <div className="h-9 w-px bg-white/5" />
+        <div className="h-10 w-px bg-gradient-to-b from-transparent via-white/15 to-transparent" />
 
         {/* City selector */}
-        <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/20 px-3 py-1.5">
+        <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-3.5 py-2 transition hover:border-white/20 hover:bg-black/40">
           <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
           <select
             value={city}
             onChange={(e) => onCityChange(e.target.value)}
-            className="bg-transparent text-sm font-medium outline-none [&>option]:bg-neutral-900"
+            className="cursor-pointer bg-transparent text-sm font-medium outline-none [&>option]:bg-neutral-900"
           >
             {cities.map((c) => (
               <option key={c} value={c}>
@@ -96,14 +96,14 @@ export function Header({ snapshot, city, cities, onCityChange, onRefresh, refres
 
         <button
           onClick={onRefresh}
-          className="group flex items-center gap-2 rounded-lg border border-white/10 bg-black/20 px-3 py-1.5 text-xs font-medium hover:bg-white/5 transition"
+          className="group flex items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-3.5 py-2 text-xs font-medium transition hover:border-white/20 hover:bg-white/5"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : "group-hover:rotate-90 transition-transform"}`} />
           <span className="text-mono text-muted-foreground">{since}s ago</span>
         </button>
 
-        <div className="flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1.5">
-          <Activity className="h-3 w-3 text-emerald-400" />
+        <div className="flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 shadow-[0_0_20px_-5px_oklch(0.78_0.18_150_/_0.5)]">
+          <Activity className="h-3 w-3 text-emerald-400 animate-pulse" />
           <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-300">Live</span>
         </div>
       </div>
