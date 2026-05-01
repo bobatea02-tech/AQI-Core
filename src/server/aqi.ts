@@ -109,9 +109,24 @@ function rng(seed: number) {
   };
 }
 
-function simulateSnapshot(city: string): CitySnapshot {
+export interface SimOptions {
+  intensity?: number; // 0.3..2.5 — multiplier on baseline
+  scenario?: "normal" | "rush" | "calm" | "wildfire" | "diwali";
+  windKmh?: number; // 0..40 — higher disperses pollutants
+}
+
+function simulateSnapshot(city: string, opts: SimOptions = {}): CitySnapshot {
   const meta = resolveCity(city);
-  const base = CITY_BASELINE[city] ?? 80;
+  const intensity = Math.max(0.2, Math.min(3, opts.intensity ?? 1));
+  const scenario = opts.scenario ?? "normal";
+  const windKmh = Math.max(0, Math.min(60, opts.windKmh ?? 8));
+  const dispersion = 1 / (0.5 + windKmh / 12); // higher wind → less pollution
+  const scenarioMult =
+    scenario === "rush" ? 1.45 :
+    scenario === "calm" ? 0.55 :
+    scenario === "wildfire" ? 2.2 :
+    scenario === "diwali" ? 2.8 : 1;
+  const base = (CITY_BASELINE[city] ?? 80) * intensity * scenarioMult * dispersion;
   const seed = Math.floor(Date.now() / (60 * 60 * 1000)) + city.length * 17;
   const rand = rng(seed);
 
@@ -163,22 +178,28 @@ function simulateSnapshot(city: string): CitySnapshot {
       temp: 20 + rand() * 18,
       humidity: Math.round(40 + rand() * 50),
       pressure: 1005 + Math.round(rand() * 20),
-      wind_speed: Number((1 + rand() * 6).toFixed(1)),
+      wind_speed: Number((windKmh / 3.6).toFixed(1)),
       wind_deg: Math.round(rand() * 360),
       description: ["clear sky", "few clouds", "haze", "mist", "smoke"][Math.floor(rand() * 5)],
       clouds: Math.round(rand() * 100),
     },
     fetchedAt: Date.now(),
     source: "simulated",
-    notice: "Live OpenWeather key not yet active (new keys take up to 2h). High-fidelity simulation in use.",
+    notice:
+      scenario !== "normal" || intensity !== 1 || (opts.windKmh !== undefined)
+        ? `Simulation: scenario=${scenario}, intensity=${intensity.toFixed(2)}×, wind=${windKmh} km/h`
+        : "Live OpenWeather key not yet active (new keys take up to 2h). High-fidelity simulation in use.",
   };
 }
 
 /* ──────────────────────────  LIVE FETCH  ────────────────────────── */
 
 export const getCitySnapshot = createServerFn({ method: "GET" })
-  .inputValidator((d: { city: string }) => d)
+  .inputValidator((d: { city: string; sim?: SimOptions; forceSim?: boolean }) => d)
   .handler(async ({ data }) => {
+    if (data.forceSim) {
+      return { ok: true as const, data: simulateSnapshot(data.city, data.sim ?? {}), error: null };
+    }
     try {
       const geo = resolveCity(data.city);
       const now = Math.floor(Date.now() / 1000);
@@ -200,7 +221,7 @@ export const getCitySnapshot = createServerFn({ method: "GET" })
       if (!currentRes.ok || !forecastRes.ok) {
         const status = currentRes.status || forecastRes.status;
         console.warn(`OpenWeather upstream returned ${status}, using simulation`);
-        const sim = simulateSnapshot(data.city);
+        const sim = simulateSnapshot(data.city, data.sim ?? {});
         if (status === 401) {
           sim.notice = "OpenWeather key not yet active — new API keys take up to 2 hours to activate. Showing simulated data.";
         }
@@ -255,7 +276,7 @@ export const getCitySnapshot = createServerFn({ method: "GET" })
     } catch (e) {
       console.error("getCitySnapshot failed:", e);
       // Last-resort fallback so the dashboard never goes blank
-      const sim = simulateSnapshot(data.city);
+      const sim = simulateSnapshot(data.city, data.sim ?? {});
       sim.notice = "Atmospheric feed unavailable — running on simulated data.";
       return { ok: true as const, data: sim, error: null };
     }

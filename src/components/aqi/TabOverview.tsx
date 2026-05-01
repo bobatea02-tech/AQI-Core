@@ -144,18 +144,39 @@ export function TabOverview({ snapshot }: { snapshot: CitySnapshot }) {
 
       {/* Pollutant share */}
       <Panel title="Pollutant Burden" subtitle="× WHO 24h limit" className="col-span-4 row-span-2">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie data={pieData} dataKey="value" innerRadius={28} outerRadius={56} paddingAngle={2}>
-              {pieData.map((_, i) => (
-                <Cell key={i} fill={pieColors[i % pieColors.length]} stroke="oklch(0 0 0 / 0.4)" />
-              ))}
-            </Pie>
-            <Tooltip
-              contentStyle={{ background: "oklch(0.1 0.03 250)", border: "1px solid oklch(1 0 0 / 0.1)", borderRadius: 8, fontSize: 11 }}
-            />
-          </PieChart>
-        </ResponsiveContainer>
+        <div className="flex h-full items-center gap-3">
+          <div className="relative h-full min-h-0 flex-1">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
+                <Pie
+                  data={pieData}
+                  dataKey="value"
+                  innerRadius="42%"
+                  outerRadius="88%"
+                  paddingAngle={2}
+                  isAnimationActive
+                  animationDuration={900}
+                >
+                  {pieData.map((_, i) => (
+                    <Cell key={i} fill={pieColors[i % pieColors.length]} stroke="oklch(0 0 0 / 0.4)" />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{ background: "oklch(0.1 0.03 250)", border: "1px solid oklch(1 0 0 / 0.1)", borderRadius: 8, fontSize: 11 }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex w-24 flex-col gap-1 text-[10px]">
+            {pieData.map((p, i) => (
+              <div key={p.name} className="flex items-center gap-1.5">
+                <span className="h-2 w-2 shrink-0 rounded-sm" style={{ background: pieColors[i % pieColors.length] }} />
+                <span className="text-muted-foreground">{p.name}</span>
+                <span className="ml-auto text-mono font-semibold">{p.value}×</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </Panel>
 
       {/* 24h sparkline */}
