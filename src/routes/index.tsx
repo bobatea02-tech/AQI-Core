@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Activity, BarChart3, Brain, GitCompareArrows, GitMerge, ShieldCheck, Wind } from "lucide-react";
-import { getCitySnapshot, type SimOptions } from "@/server/aqi";
+import { getCitySnapshot } from "@/server/aqi";
 import { Header } from "@/components/aqi/Header";
 import { TabOverview } from "@/components/aqi/TabOverview";
 import { TabPipeline } from "@/components/aqi/TabPipeline";
@@ -38,12 +38,9 @@ function Dashboard() {
   const router = useRouter();
   const [city, setCity] = useState("Delhi");
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("overview");
-  const [forceSim, setForceSim] = useState(false);
-  const [simOptions, setSimOptions] = useState<SimOptions>({ intensity: 1, windKmh: 8, scenario: "normal" });
-
   const query = useQuery({
-    queryKey: ["aqi", city, forceSim, simOptions],
-    queryFn: () => getCitySnapshot({ data: { city, forceSim, sim: simOptions } }),
+    queryKey: ["aqi", city],
+    queryFn: () => getCitySnapshot({ data: { city } }),
     refetchInterval: 5 * 60_000,
   });
 
@@ -71,10 +68,6 @@ function Dashboard() {
           onCityChange={setCity}
           onRefresh={() => router.invalidate().then(() => query.refetch())}
           refreshing={query.isFetching}
-          forceSim={forceSim}
-          onForceSim={setForceSim}
-          simOptions={simOptions}
-          onSimChange={setSimOptions}
         />
       ) : (
         <SkeletonHeader city={city} cities={CITIES} onCityChange={setCity} loading={query.isLoading} error={query.data?.error || (query.error instanceof Error ? query.error.message : null)} />

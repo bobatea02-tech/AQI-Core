@@ -1,8 +1,7 @@
 import { motion } from "framer-motion";
 import { Activity, MapPin, RefreshCw, Wind } from "lucide-react";
 import { aqiCategory, aqiColor, aqiGradient, compositeAqi } from "@/lib/aqi";
-import type { CitySnapshot, SimOptions } from "@/server/aqi";
-import { SimulationControls } from "./SimulationControls";
+import type { CitySnapshot } from "@/server/aqi";
 
 interface Props {
   snapshot: CitySnapshot;
@@ -11,13 +10,9 @@ interface Props {
   onCityChange: (c: string) => void;
   onRefresh: () => void;
   refreshing: boolean;
-  forceSim: boolean;
-  onForceSim: (v: boolean) => void;
-  simOptions: SimOptions;
-  onSimChange: (o: SimOptions) => void;
 }
 
-export function Header({ snapshot, city, cities, onCityChange, onRefresh, refreshing, forceSim, onForceSim, simOptions, onSimChange }: Props) {
+export function Header({ snapshot, city, cities, onCityChange, onRefresh, refreshing }: Props) {
   const aqi = compositeAqi(snapshot.current.pm2_5, snapshot.current.pm10);
   const category = aqiCategory(aqi);
   const color = aqiColor(aqi);
@@ -106,8 +101,6 @@ export function Header({ snapshot, city, cities, onCityChange, onRefresh, refres
           <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : "group-hover:rotate-90 transition-transform"}`} />
           <span className="text-mono text-muted-foreground">{since}s ago</span>
         </button>
-
-        <SimulationControls forceSim={forceSim} onForceSim={onForceSim} options={simOptions} onChange={onSimChange} />
 
         <div className="flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 shadow-[0_0_20px_-5px_oklch(0.78_0.18_150_/_0.5)]">
           <Activity className="h-3 w-3 text-emerald-400 animate-pulse" />
