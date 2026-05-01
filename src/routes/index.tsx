@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Activity, BarChart3, Brain, GitMerge, ShieldCheck, Wind } from "lucide-react";
-import { getCitySnapshot } from "@/server/aqi";
+import { Activity, BarChart3, Brain, GitCompareArrows, GitMerge, ShieldCheck, Wind } from "lucide-react";
+import { getCitySnapshot, type SimOptions } from "@/server/aqi";
 import { Header } from "@/components/aqi/Header";
 import { TabOverview } from "@/components/aqi/TabOverview";
 import { TabPipeline } from "@/components/aqi/TabPipeline";
@@ -12,6 +12,7 @@ import { TabPredict } from "@/components/aqi/TabPredict";
 import { TabCorrelation } from "@/components/aqi/TabCorrelation";
 import { TabSources } from "@/components/aqi/TabSources";
 import { TabValidation } from "@/components/aqi/TabValidation";
+import { TabCompare } from "@/components/aqi/TabCompare";
 
 const CITIES = [
   "Delhi", "Mumbai", "Bengaluru", "Kolkata", "Chennai", "Hyderabad",
@@ -28,6 +29,7 @@ const TABS = [
   { id: "pipeline", label: "Pipeline & EDA", icon: GitMerge },
   { id: "predict", label: "Forecast", icon: Brain },
   { id: "correlate", label: "Correlations", icon: BarChart3 },
+  { id: "compare", label: "Compare Cities", icon: GitCompareArrows },
   { id: "sources", label: "Sources", icon: Wind },
   { id: "validate", label: "Validation", icon: ShieldCheck },
 ] as const;
@@ -36,10 +38,12 @@ function Dashboard() {
   const router = useRouter();
   const [city, setCity] = useState("Delhi");
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("overview");
+  const [forceSim, setForceSim] = useState(false);
+  const [simOptions, setSimOptions] = useState<SimOptions>({ intensity: 1, windKmh: 8, scenario: "normal" });
 
   const query = useQuery({
-    queryKey: ["aqi", city],
-    queryFn: () => getCitySnapshot({ data: { city } }),
+    queryKey: ["aqi", city, forceSim, simOptions],
+    queryFn: () => getCitySnapshot({ data: { city, forceSim, sim: simOptions } }),
     refetchInterval: 5 * 60_000,
   });
 
@@ -67,6 +71,10 @@ function Dashboard() {
           onCityChange={setCity}
           onRefresh={() => router.invalidate().then(() => query.refetch())}
           refreshing={query.isFetching}
+          forceSim={forceSim}
+          onForceSim={setForceSim}
+          simOptions={simOptions}
+          onSimChange={setSimOptions}
         />
       ) : (
         <SkeletonHeader city={city} cities={CITIES} onCityChange={setCity} loading={query.isLoading} error={query.data?.error || (query.error instanceof Error ? query.error.message : null)} />
@@ -145,6 +153,9 @@ function Dashboard() {
                 </TabsContent>
                 <TabsContent value="correlate" className="m-0 h-full data-[state=inactive]:hidden">
                   {tab === "correlate" && <TabCorrelation snapshot={query.data.data} />}
+                </TabsContent>
+                <TabsContent value="compare" className="m-0 h-full data-[state=inactive]:hidden">
+                  {tab === "compare" && <TabCompare primaryCity={city} cities={CITIES} />}
                 </TabsContent>
                 <TabsContent value="sources" className="m-0 h-full data-[state=inactive]:hidden">
                   {tab === "sources" && <TabSources snapshot={query.data.data} />}
